@@ -1,4 +1,6 @@
 steps:
-- script: npm install
-- script: npm run build
-- script: npm test
+- script: |
+    npm install
+    npm run build
+    npm test
+  displayName: 'Install dependencies, build, and test'
