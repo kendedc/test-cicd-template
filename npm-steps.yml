@@ -6,6 +6,8 @@ steps:
   displayName: "Cache Yarn Cache"
 - ${{ if eq(parameters.isFrozen, true) }}:
   script: |
+      echo "" >> $(Build.SourcesDirectory)/.npmrc
+
       yarn install --frozen-lockfile
   displayName: "Install dependencies"
 # - script: |
