@@ -1,17 +1,38 @@
 steps:
-- task: CacheBeta@1
-  inputs:
-    key: 'yarn | "$(Agent.OS)" | yarn.lock'
-    path: $(Pipeline.Workspace)/.yarn_cache
-  displayName: "Cache Yarn Cache"
-- ${{ if eq(parameters.isFrozen, true) }}:
-  script: |
-      echo "" >> $(Build.SourcesDirectory)/.npmrc
+- script: |
+    echo "Detecting package manager..."
+    if [ -f "$(Build.SourcesDirectory)/yarn.lock" ]; then
+      echo "Found yarn.lock -> selecting yarn"
+      echo "##vso[task.setvariable variable=useYarn]true"
+    elif [ -f "$(Build.SourcesDirectory)/package-lock.json" ]; then
+      echo "Found package-lock.json -> selecting npm"
+      echo "##vso[task.setvariable variable=useYarn]false"
+    else
+      echo "No lockfile found. Defaulting to npm"
+      echo "##vso[task.setvariable variable=useYarn]false"
+    fi
+  displayName: 'Detect package manager'
 
-      yarn install --frozen-lockfile
+- script: |
+    echo "Running frozen install"
+    echo "" >> $(Build.SourcesDirectory)/.npmrc || true
+
+    if [ '$(useYarn)' = 'true' ]; then
+      echo "Using yarn --frozen-lockfile"
+      yarn install --frozen-lockfile --cache-folder $(Pipeline.Workspace)/.yarn_cache
+    else
+      echo "Using npm ci"
+      npm ci
+    fi
   displayName: "Install dependencies"
-# - script: |
-#     npm install
-#     npm run build
-#     npm test
-#   displayName: 'Install dependencies, build, and test'
+
+- script: |
+    echo "Running build and tests"
+    if [ '$(useYarn)' = 'true' ]; then
+      yarn build
+      yarn test
+    else
+      npm run build
+      npm test
+    fi
+  displayName: "Build and test"
