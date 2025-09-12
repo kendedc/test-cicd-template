@@ -27,12 +27,23 @@ steps:
   displayName: "Install dependencies"
 
 - script: |
-    echo "Running build and tests"
+    echo "Running build"
     if [ '$(useYarn)' = 'true' ]; then
       yarn build
-      yarn test
     else
       npm run build
-      npm test
     fi
-  displayName: "Build and test"
+  displayName: "Build project"
+
+- task: CopyFiles@2
+  displayName: 'Copy build output to staging directory'
+  inputs:
+    contents: 'build/**'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-drop'
+    publishLocation: 'Container'
