@@ -1,5 +1,5 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '${{ parameters.nodeVersion }}'
-  displayName: 'Installing Node.js ${{ parameters.nodeVersion }}'
+    versionSpec: '${{ parameters.nodeVersion || "18.x" }}'
+  displayName: 'Installing Node.js ${{ parameters.nodeVersion || "18.x" }}'
