@@ -35,20 +35,10 @@ steps:
     fi
   displayName: "Build project"
 
-# Copy from dist if it exists
 - task: CopyFiles@2
-  displayName: 'Copy build output from dist'
-  condition: exists('$(Build.SourcesDirectory)/dist')
+  displayName: 'Copy build output to staging directory'
   inputs:
     contents: 'dist/**'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
-
-# Copy from build if it exists
-- task: CopyFiles@2
-  displayName: 'Copy build output from build'
-  condition: exists('$(Build.SourcesDirectory)/build')
-  inputs:
-    contents: 'build/**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
