@@ -1,3 +1,7 @@
+parameters:
+  - name: storageAccount
+    type: string
+
 steps:
 - checkout: none
 - task: DownloadBuildArtifacts@1
@@ -7,6 +11,13 @@ steps:
     artifactName: "$(Build.BuildId)-drop"
     downloadPath: "$(System.ArtifactsDirectory)"
   displayName: "Download Build Artifacts"
+
+- script: |
+    echo "Contents of downloaded artifact (top-level):"
+    ls -la "$(System.ArtifactsDirectory)/drop" || true
+    echo "Contents of possible dist folder:"
+    ls -la "$(System.ArtifactsDirectory)/drop/dist" || true
+  displayName: 'Debug: List downloaded artifact contents'
 
 - task: AzureCLI@2
   inputs:
