@@ -14,9 +14,9 @@ steps:
 
 - script: |
     echo "Contents of downloaded artifact (top-level):"
-    ls -la "$(System.ArtifactsDirectory)/drop" || true
+    ls -la "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop" || true
     echo "Contents of possible dist folder:"
-    ls -la "$(System.ArtifactsDirectory)/drop/dist" || true
+    ls -la "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop/dist" || true
   displayName: 'Debug: List downloaded artifact contents'
 
 - task: AzureCLI@2
