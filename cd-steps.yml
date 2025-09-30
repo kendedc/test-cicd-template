@@ -29,7 +29,7 @@ steps:
       has_web=$( \
         az storage container exists \
           --name '$web' \
-          --account-name '${{ parameters.storageAccount }}' \
+          --account-name '$(STORAGE_ACCOUNT)' \
           --account-key '$(STORAGE_KEY)' \
           --query "exists" \
           -o tsv || echo "false" \
@@ -37,7 +37,7 @@ steps:
       if [ "$has_web" != "true" ]; then
         echo "'\$web' container not found. Enabling static website (creates \$web)..."
         az storage blob service-properties update \
-          --account-name '${{ parameters.storageAccount }}' \
+          --account-name '$(STORAGE_ACCOUNT)' \
           --account-key '$(STORAGE_KEY)' \
           --static-website \
           --index-document index.html \
@@ -49,7 +49,7 @@ steps:
       # upload to the special static-website container named $web
       az storage blob upload-batch \
         --destination '$web' \
-        --account-name '${{ parameters.storageAccount }}' \
+        --account-name '$(STORAGE_ACCOUNT)' \
         --account-key '$(STORAGE_KEY)' \
         --source "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop/dist" \
         --overwrite
