@@ -6,6 +6,7 @@ steps:
     downloadType: "single"
     artifactName: "$(Build.BuildId)-drop"
     downloadPath: "$(System.ArtifactsDirectory)"
+  displayName: "Download Build Artifacts"
 
 - task: AzureCLI@2
   inputs:
