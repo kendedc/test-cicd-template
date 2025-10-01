@@ -1,7 +1,3 @@
-parameters:
-  - name: storageAccount
-    type: string
-
 steps:
 - checkout: none
 - task: DownloadBuildArtifacts@1
