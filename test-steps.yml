@@ -18,6 +18,6 @@ steps:
     if [ '$(useYarn)' = 'true' ]; then
       yarn test
     else
-      npm test
+      npm run test
     fi
   displayName: "Run unit tests"
