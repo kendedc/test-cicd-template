@@ -1,0 +1,23 @@
+steps:
+- script: |
+    echo "Detecting package manager..."
+    if [ -f "$(Build.SourcesDirectory)/yarn.lock" ]; then
+      echo "Found yarn.lock -> selecting yarn"
+      echo "##vso[task.setvariable variable=useYarn]true"
+    elif [ -f "$(Build.SourcesDirectory)/package-lock.json" ]; then
+      echo "Found package-lock.json -> selecting npm"
+      echo "##vso[task.setvariable variable=useYarn]false"
+    else
+      echo "No lockfile found. Defaulting to npm"
+      echo "##vso[task.setvariable variable=useYarn]false"
+    fi
+  displayName: 'Detect package manager'
+
+- script: |
+    echo "Running unit tests"
+    if [ '$(useYarn)' = 'true' ]; then
+      yarn test
+    else
+      npm test
+    fi
+  displayName: "Run unit tests"
