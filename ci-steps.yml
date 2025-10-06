@@ -1,3 +1,8 @@
+parameters:
+  - name: isTest
+    type: boolean
+    default: false
+
 steps:
 - script: |
     echo "Detecting package manager..."
@@ -25,6 +30,16 @@ steps:
       npm ci
     fi
   displayName: "Install dependencies"
+
+- script: |
+    echo "Running unit tests"
+    if [ '$(useYarn)' = 'true' ]; then
+      yarn test
+    else
+      npm run test
+    fi
+  displayName: "Run unit tests"
+  condition: eq('${{ parameters.isTest }}', 'true')
 
 - script: |
     echo "Running build"
