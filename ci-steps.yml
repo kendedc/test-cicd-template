@@ -2,8 +2,16 @@ parameters:
   - name: isTest
     type: boolean
     default: false
+  - name: nodeVersion
+    type: string
+    default: "20.x"
 
 steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '${{ parameters.nodeVersion }}'
+  displayName: "Use Node.js ${{ parameters.nodeVersion }}"
+
 - script: |
     echo "Detecting package manager..."
     if [ -f "$(Build.SourcesDirectory)/yarn.lock" ]; then
