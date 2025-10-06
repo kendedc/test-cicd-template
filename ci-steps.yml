@@ -31,15 +31,15 @@ steps:
     fi
   displayName: "Install dependencies"
 
-${{ if eq(parameters.isTest, true) }}:
 - script: |
     echo "Running unit tests"
     if [ '$(useYarn)' = 'true' ]; then
-      yarn test --ci
+      yarn test
     else
-      npm run test -- --ci
+      npm run test
     fi
   displayName: "Run unit tests"
+  condition: eq('${{ parameters.isTest }}', 'true')
 
 - script: |
     echo "Running build"
