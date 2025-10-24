@@ -1,3 +1,11 @@
+parameters:
+  - name: preDeploySteps
+    type: stepList
+    default: []
+  - name: postDeploySteps
+    type: stepList
+    default: []
+
 steps:
 - checkout: none
 - task: DownloadBuildArtifacts@1
@@ -14,6 +22,9 @@ steps:
     echo "Contents of possible dist folder:"
     ls -la "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop/dist" || true
   displayName: 'Debug: List downloaded artifact contents'
+
+- ${{ each step in parameters.preDeploySteps }}:
+  - ${{ step }}
 
 - task: AzureCLI@2
   inputs:
@@ -50,3 +61,6 @@ steps:
         --source "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop/dist" \
         --overwrite
   displayName: "Deploy to Azure Storage"
+
+- ${{ each step in parameters.postDeploySteps }}:
+  - ${{ step }}
