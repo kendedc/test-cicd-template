@@ -1,4 +1,6 @@
 parameters:
+  - name: dockerImageName
+    type: string
   - name: dockerfilePath
     type: string
 
