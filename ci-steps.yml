@@ -41,7 +41,9 @@ steps:
       yarn install --frozen-lockfile --cache-folder $(Pipeline.Workspace)/.yarn_cache
     else
       echo "Using npm ci"
-      npm ci
+
+      mkdir -p ./.npm-cache
+      npm ci --cache ./.npm-cache
     fi
   displayName: "Install dependencies"
 
