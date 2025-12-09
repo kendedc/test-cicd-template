@@ -1,4 +1,6 @@
 parameters:
+  - name: containerRegistry
+    type: string
   - name: dockerImageName
     type: string
   - name: dockerfilePath
@@ -39,7 +41,7 @@ steps:
     
     echo "Scanning Image..."
     # Run Trivy using the direct path
-    $(Build.BinariesDirectory)/trivy-bin/trivy image --exit-code 1 --severity CRITICAL --light ${{ parameters.dockerImageName }}
+    $(Build.BinariesDirectory)/trivy-bin/trivy image --exit-code 1 --severity CRITICAL --light ${{ parameters.containerRegistry }}/${{ parameters.dockerImageName }}
   displayName: 'Security Scan (Trivy)'
   condition: and(succeeded(), eq('${{ parameters.runSecurityScan }}', 'true'))
 
