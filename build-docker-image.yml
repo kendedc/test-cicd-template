@@ -3,6 +3,9 @@ parameters:
     type: string
   - name: dockerfilePath
     type: string
+  - name: runSecurityScan
+    type: boolean
+    default: true
 
 steps:
 - task: DownloadBuildArtifacts@1
@@ -14,13 +17,47 @@ steps:
   displayName: "Download Build Artifacts"
 
 - task: Docker@2
-  displayName: 'Build docker image and push to ACR'
+  displayName: 'Build Docker Image'
   inputs:
-    command: buildAndPush
+    command: build
     containerRegistry: $(ACR_SERVICE_CONNECTION)
     repository: ${{ parameters.dockerImageName }}
-    dockerfile: '${{ parameters.dockerfilePath }}'
+    dockerfile: ${{ parameters.dockerfilePath }}
     buildContext: '$(System.ArtifactsDirectory)/$(Build.BuildId)-drop'
     tags: |
       $(Build.BuildId)
       latest
+    arguments: '--build-arg BUILD_ID=$(Build.BuildId)'
+
+- script: |
+    echo "Installing Trivy..."
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    
+    echo "Scanning Image..."
+    # --exit-code 1 fails the pipeline if vulnerabilities are found
+    # --severity CRITICAL only fails on critical issues (you can add HIGH)
+    trivy image --exit-code 1 --severity CRITICAL --light ${{ parameters.dockerImageName }}:$(Build.BuildId)
+  displayName: 'Security Scan (Trivy)'
+  condition: and(succeeded(), eq('${{ parameters.runSecurityScan }}', 'true'))
+
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    command: push
+    containerRegistry: $(ACR_SERVICE_CONNECTION)
+    repository: ${{ parameters.dockerImageName }}
+    tags: |
+      $(Build.BuildId)
+      latest
+
+# - task: Docker@2
+#   displayName: 'Build docker image and push to ACR'
+#   inputs:
+#     command: buildAndPush
+#     containerRegistry: $(ACR_SERVICE_CONNECTION)
+#     repository: ${{ parameters.dockerImageName }}
+#     dockerfile: '${{ parameters.dockerfilePath }}'
+#     buildContext: '$(System.ArtifactsDirectory)/$(Build.BuildId)-drop'
+#     tags: |
+#       $(Build.BuildId)
+#       latest
