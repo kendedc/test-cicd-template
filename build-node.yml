@@ -19,6 +19,11 @@ steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '${{ parameters.nodeVersion }}'
+  displayName: 'Installing Node.js ${{ parameters.nodeVersion }}'
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '${{ parameters.nodeVersion }}'
   displayName: "Use Node.js ${{ parameters.nodeVersion }}"
 
 - script: |
