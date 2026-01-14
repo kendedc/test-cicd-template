@@ -16,13 +16,6 @@ steps:
     downloadPath: "$(System.ArtifactsDirectory)"
   displayName: "Download Build Artifacts"
 
-- script: |
-    echo "Contents of downloaded artifact (top-level):"
-    ls -la "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop" || true
-    echo "Contents of possible dist folder:"
-    ls -la "$(System.ArtifactsDirectory)/$(Build.BuildId)-drop/dist" || true
-  displayName: 'Debug: List downloaded artifact contents'
-
 - ${{ each step in parameters.preDeploySteps }}:
   - ${{ step }}
 
